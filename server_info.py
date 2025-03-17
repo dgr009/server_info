@@ -58,16 +58,17 @@ class ServerInfoRetriever:
         df_root_output = self._execute_ssh_command('df -h /')
         df_app_output = self._execute_ssh_command('df -h /app')
         df_data_output = self._execute_ssh_command('df -h /data')
+        cpu_num_output = self._execute_ssh_command('nproc')
         cpu_output = self._execute_ssh_command('top -bn1 | grep "Cpu(s)"')
         memory_output = self._execute_ssh_command('free -h')
         default_interface = self._execute_ssh_command("sudo ip route | grep default | awk '{print $5}' | head -n 1")
         ip_output = self._execute_ssh_command(f"sudo ip addr show {default_interface} | grep 'inet ' | awk '{{print $2}}' | cut -d'/' -f1")
 
-        if None in [df_root_output, df_app_output, df_data_output, cpu_output, memory_output, ip_output]:
+        if None in [df_root_output, df_app_output, df_data_output, cpu_num_output, cpu_output, memory_output, ip_output]:
             print(f"Error retrieving information for server: {self.hostname}")
             return None
 
-        return df_root_output, df_app_output, df_data_output, cpu_output, memory_output, ip_output
+        return df_root_output, df_app_output, df_data_output, cpu_num_output, cpu_output, memory_output, ip_output
 
     def close_connection(self):
         if self.ssh:
@@ -99,10 +100,10 @@ def fetch_server_info(config):
     retriever.close_connection()
 
     if device_info is None:
-        return config['servername'], config['hostname'], "Connection Fail", "N/A", "N/A", "N/A", "N/A", "N/A"
+        return config['servername'], config['hostname'], "Connection Fail", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"
     else:
-        df_root_output, df_app_output, df_data_output, cpu_output, memory_output, ip_output = device_info
-        return config['servername'], config['hostname'], ip_output, df_root_output, df_app_output, df_data_output, cpu_output, memory_output
+        df_root_output, df_app_output, df_data_output, cpu_num_output, cpu_output, memory_output, ip_output = device_info
+        return config['servername'], config['hostname'], ip_output, df_root_output, df_app_output, df_data_output, cpu_num_output, cpu_output, memory_output
 
 def color_percentage(value):
     if value == "N/A" or value == "-":
@@ -120,7 +121,8 @@ def color_percentage(value):
 
 def display_server_info(results, headers):
     # 사용자가 원래 넣어놓은 열 너비를 유지
-    widths = [22, 15, 15, 7, 7, 7, 8, 8, 8, 9, 9, 7, 9, 12, 11, 11, 9]
+    #widths = [22, 15, 15, 7, 7, 7, 8, 8, 8, 9, 9, 7, 9, 8, 8, 8, 7]
+    widths = [22, 15, 15, 7, 6, 8, 7, 9, 7, 5, 9, 8, 7]
     header_format = " | ".join([f"{{:<{width}}}" for width in widths])
     
     # 헤더에 청록색 적용
@@ -131,7 +133,7 @@ def display_server_info(results, headers):
     sorted_result = sorted(results, key=lambda x: x[0])
 
     for data in sorted_result:
-        servername, hostname, ip_output, df_root_output, df_app_output, df_data_output, cpu_output, memory_output = data
+        servername, hostname, ip_output, df_root_output, df_app_output, df_data_output, cpu_num_output, cpu_output, memory_output = data
 
         if ip_output == "Connection Fail":
             root_total_capacity = root_current_capacity = root_percentage = "N/A"
@@ -175,8 +177,14 @@ def display_server_info(results, headers):
                         data_percentage = df_columns[4]
 
             # Extracting CPU information
+
+            cpu_num = cpu_num_output
+            cpu_output = cpu_output.replace(',', ' ')
             cpu_columns = re.split('\s+', cpu_output)
-            cpu_usage = cpu_columns[1] + '%'
+            #print(cpu_columns)
+            idle_cpu = float(cpu_columns[7])
+            cpu_usage = 100.0 - idle_cpu
+            cpu_usage = f"{cpu_usage:.1f}%"
 
             # 메모리 값 파싱 함수
             def parse_memory_value(value):
@@ -228,20 +236,35 @@ def display_server_info(results, headers):
             pad_text(hostname, widths[1]),
             pad_text(ip_output_colored, widths[2]),
             pad_text(root_total_capacity, widths[3]),
-            pad_text(root_current_capacity, widths[4]),
-            pad_text(root_percentage_colored, widths[5]),
-            pad_text(app_total_capacity, widths[6]),
-            pad_text(app_current_capacity, widths[7]),
-            pad_text(app_percentage_colored, widths[8]),
-            pad_text(data_total_capacity, widths[9]),
-            pad_text(data_current_capacity, widths[10]),
-            pad_text(data_percentage_colored, widths[11]),
-            pad_text(cpu_usage_colored, widths[12]),
-            pad_text(total_memory_str, widths[13]),
-            pad_text(used_memory_str, widths[14]),
-            pad_text(free_memory_str, widths[15]),
-            pad_text(memory_percentage_colored, widths[16])
+            pad_text(root_percentage_colored, widths[4]),
+            pad_text(app_total_capacity, widths[5]),
+            pad_text(app_percentage_colored, widths[6]),
+            pad_text(data_total_capacity, widths[7]),
+            pad_text(data_percentage_colored, widths[8]),
+            pad_text(cpu_num, widths[9]),
+            pad_text(cpu_usage_colored, widths[10]),
+            pad_text(total_memory_str, widths[11]),
+            pad_text(memory_percentage_colored, widths[12])
         ])
+        # data_line = " | ".join([
+        #     pad_text(servername, widths[0]),
+        #     pad_text(hostname, widths[1]),
+        #     pad_text(ip_output_colored, widths[2]),
+        #     pad_text(root_total_capacity, widths[3]),
+        #     pad_text(root_current_capacity, widths[4]),
+        #     pad_text(root_percentage_colored, widths[5]),
+        #     pad_text(app_total_capacity, widths[6]),
+        #     pad_text(app_current_capacity, widths[7]),
+        #     pad_text(app_percentage_colored, widths[8]),
+        #     pad_text(data_total_capacity, widths[9]),
+        #     pad_text(data_current_capacity, widths[10]),
+        #     pad_text(data_percentage_colored, widths[11]),
+        #     pad_text(cpu_usage_colored, widths[12]),
+        #     pad_text(total_memory_str, widths[13]),
+        #     pad_text(used_memory_str, widths[14]),
+        #     pad_text(free_memory_str, widths[15]),
+        #     pad_text(memory_percentage_colored, widths[16])
+        # ])
         print(data_line)
 
     failed_servers = [data for data in results if data[2] == "Connection Fail"]
@@ -252,8 +275,9 @@ def display_server_info(results, headers):
 
 def main():
     server_configs = parse_ssh_config()
-    headers = ["Server Name", "Host Name", "Internal IP", "/ Tot", "/ Cur", "/ %", '/app Tot', '/app Cur', '/app %', '/data Tot', '/data Cur', '/data %', "CPU Usage", "Total Memory", "Used Memory", "Free Memory", "Memory %"]
-    
+    headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ %", '/app Tot', '/app %', '/data Tot', '/data %', "CPU", "CPU Usage", "Total Mem", "Mem %"]
+    #headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ Cur", "/ %", '/app Tot', '/app Cur', '/app %', '/data Tot', '/data Cur', '/data %', "CPU Usage", "Total Mem", "Used Mem", "Free Mem", "Mem %"]
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
         future_to_server = {executor.submit(fetch_server_info, config): config for config in server_configs}
         results = []
