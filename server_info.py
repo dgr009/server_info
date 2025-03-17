@@ -122,7 +122,7 @@ def color_percentage(value):
 def display_server_info(results, headers):
     # 사용자가 원래 넣어놓은 열 너비를 유지
     #widths = [22, 15, 15, 7, 7, 7, 8, 8, 8, 9, 9, 7, 9, 8, 8, 8, 7]
-    widths = [22, 15, 15, 7, 6, 8, 7, 9, 7, 5, 9, 8, 7]
+    widths = [22, 15, 15, 7, 6, 8, 7, 9, 7, 4, 9, 8, 7]
     header_format = " | ".join([f"{{:<{width}}}" for width in widths])
     
     # 헤더에 청록색 적용
@@ -275,7 +275,7 @@ def display_server_info(results, headers):
 
 def main():
     server_configs = parse_ssh_config()
-    headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ %", '/app Tot', '/app %', '/data Tot', '/data %', "CPU", "CPU Usage", "Total Mem", "Mem %"]
+    headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ %", '/app Tot', '/app %', '/data Tot', '/data %', "vCPU", "CPU Usage", "Total Mem", "Mem %"]
     #headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ Cur", "/ %", '/app Tot', '/app Cur', '/app %', '/data Tot', '/data Cur', '/data %', "CPU Usage", "Total Mem", "Used Mem", "Free Mem", "Mem %"]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
