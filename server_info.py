@@ -11,6 +11,9 @@ GREEN = "\033[32m"
 BLUE = "\033[34m"
 CYAN = "\033[36m"
 
+# .ssh/config 파일 경로
+CONFIG_FILE = "~/.ssh/config"
+
 # 색상 코드를 제거한 텍스트의 길이를 반환하는 함수
 def text_length(text):
     return len(re.sub(r'\033\[\d+m', '', text))
@@ -75,7 +78,7 @@ class ServerInfoRetriever:
             self.ssh.close()
 
 def parse_ssh_config():
-    config_path = os.path.expanduser("~/.ssh/config_server")
+    config_path = os.path.expanduser(CONFIG_FILE)
     ssh_config = paramiko.SSHConfig()
     with open(config_path) as config_file:
         ssh_config.parse(config_file)
@@ -139,6 +142,7 @@ def display_server_info(results, headers):
             root_total_capacity = root_current_capacity = root_percentage = "N/A"
             app_total_capacity = app_current_capacity = app_percentage = "N/A"
             data_total_capacity = data_current_capacity = data_percentage = "N/A"
+            cpu_num_output = cpu_num = "N/A"
             cpu_usage = "N/A"
             total_memory_str = used_memory_str = free_memory_str = "N/A"
             memory_percentage = "N/A"
