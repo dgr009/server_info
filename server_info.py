@@ -16,6 +16,7 @@ CYAN = "\033[36m"
 # .ssh/config 파일 경로
 SSH_CONFIG_FILE =  os.getenv("SSH_CONFIG_FILE", "~/.ssh/config")
 SSH_TIMEOUT = os.getenv("SSH_TIMEOUT", 3)
+MAX_WORKER = os.getenv("MAX_WORKER", 30)
 
 # 색상 코드를 제거한 텍스트의 길이를 반환하는 함수
 def text_length(text):
@@ -267,7 +268,7 @@ def main():
     headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ %", '/app Tot', '/app %', '/data Tot', '/data %', "vCPU", "CPU Usage", "Total Mem", "Mem %"]
     #headers = ["Server Name", "Access IP", "Internal IP", "/ Tot", "/ Cur", "/ %", '/app Tot', '/app Cur', '/app %', '/data Tot', '/data Cur', '/data %', "CPU Usage", "Total Mem", "Used Mem", "Free Mem", "Mem %"]
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
         future_to_server = {executor.submit(fetch_server_info, config): config for config in server_configs}
         results = []
         for future in concurrent.futures.as_completed(future_to_server):
