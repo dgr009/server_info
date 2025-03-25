@@ -95,7 +95,7 @@ def parse_ssh_config():
             "servername": host_info,
             "hostname": config.get("hostname"),
             "username": config.get("user", os.getlogin()),
-            "port": config.get("port"),
+            "port": config.get("port",22),
             "private_key_path": config.get("identityfile", [])[0] if config.get("identityfile") else None
         })
     return servers
@@ -196,7 +196,7 @@ def display_server_info(results, headers):
             # 메모리 값 파싱 함수
             def parse_memory_value(value):
                 if value.endswith('Gi'):
-                    return float(value[:-2])
+                    return float(value[:-1])
                 elif value.endswith('Mi'):
                     return float(value[:-2]) / 1024
                 elif value.endswith('Ki'):
@@ -253,25 +253,7 @@ def display_server_info(results, headers):
             pad_text(total_memory_str, widths[11]),
             pad_text(memory_percentage_colored, widths[12])
         ])
-        # data_line = " | ".join([
-        #     pad_text(servername, widths[0]),
-        #     pad_text(hostname, widths[1]),
-        #     pad_text(ip_output_colored, widths[2]),
-        #     pad_text(root_total_capacity, widths[3]),
-        #     pad_text(root_current_capacity, widths[4]),
-        #     pad_text(root_percentage_colored, widths[5]),
-        #     pad_text(app_total_capacity, widths[6]),
-        #     pad_text(app_current_capacity, widths[7]),
-        #     pad_text(app_percentage_colored, widths[8]),
-        #     pad_text(data_total_capacity, widths[9]),
-        #     pad_text(data_current_capacity, widths[10]),
-        #     pad_text(data_percentage_colored, widths[11]),
-        #     pad_text(cpu_usage_colored, widths[12]),
-        #     pad_text(total_memory_str, widths[13]),
-        #     pad_text(used_memory_str, widths[14]),
-        #     pad_text(free_memory_str, widths[15]),
-        #     pad_text(memory_percentage_colored, widths[16])
-        # ])
+        
         print(data_line)
 
     failed_servers = [data for data in results if data[2] == "Connection Fail"]
