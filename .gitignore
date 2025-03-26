@@ -1,0 +1,147 @@
+# 운영체제 시스템 파일
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# 로그 파일
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 환경 변수, 비밀 키, 민감한 정보
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.pfx
+*.p12
+secrets.json
+credentials.json
+auth.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+*.manifest
+*.spec
+.cache/
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+coverage.xml
+htmlcov/
+*.mo
+*.pot
+
+# Python 가상환경
+venv/
+.venv/
+ENV/
+env/
+python_env/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+pnpm-debug.log
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# TypeScript
+*.tsbuildinfo
+
+# VS Code
+.vscode/
+
+# JetBrains (PyCharm 등)
+.idea/
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# Windows
+$RECYCLE.BIN/
+*.lnk
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json
+terraform.tfvars
+terraform.tfvars.json
+
+# Docker
+*.tar
+*.bak
+*.pid
+docker-compose.override.yml
+
+# Jupyter Notebook 체크포인트
+.ipynb_checkpoints/
+
+# SQLite DB 등
+*.sqlite3
+*.db
+
+# 기타 빌드 산출물
+*.out
+*.o
+*.class
+*.exe
+*.dll
+*.obj
+
+# 테스트 결과
+nosetests.xml
+test-output/
+junit-*.xml
+
+# Coverage 결과
+coverage.xml
+*.lcov
+
+# Local 설정 파일들 (사용자 설정 등)
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# AWS, GCP, Azure 등의 자격 증명
+.aws/
+.gcloud/
+.azure/
+*.boto
+*.json
+
+# SSL 인증서
+cert.pem
+privkey.pem
+fullchain.pem
+
+# Ignore private 문서/노트
+notes/
+*.pdf~
