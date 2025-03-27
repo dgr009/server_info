@@ -193,7 +193,7 @@ class ServerInfoRetriever:
             raw_output = stdout.read().decode('utf-8', errors='replace')
 
             # 첫 글자로 배너로 판단할 문자들(예: '_', '|', ''') 정의
-            banner_start_chars = ("_", "|", "'", "(", ")", ".", "/", "\\", "^", "-")
+            banner_start_chars = ("_", "|", "'", "^", "-")
 
             filtered_lines = []
             for line in raw_output.split('\n'):
